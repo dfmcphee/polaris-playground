@@ -1,0 +1,8 @@
+{
+  "extends": [
+    "plugin:shopify/react"
+  ],
+  "rules": {
+    "react/prop-types": false
+  }
+}
