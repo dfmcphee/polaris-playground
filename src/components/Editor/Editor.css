@@ -1,0 +1,50 @@
+.react-live {
+  display: flex;
+  height: 100%;
+}
+
+.prism-code {
+  flex: 1 1 40rem;
+  padding: 2rem;
+  margin: 0;
+  min-width: 0;
+  background-color: #000639;
+  color: #32cac7;
+  font-family: "SF Mono", "Monaco", "Inconsolata", "Fira Mono", "Droid Sans Mono", "Source Code Pro", monospace;
+  white-space: pre-wrap;
+  overflow-y: auto;
+}
+
+.prism-code:focus {
+  outline: 0;
+}
+
+.react-live-preview {
+  flex: 1 1 60rem;
+  overflow-y: auto;
+  padding: 2rem;
+}
+
+.operator {
+  color: #fff;
+}
+
+.attr-name {
+  color: #fdac9a;
+}
+
+.attr-value {
+  color: #edc200;
+}
+
+.boolean {
+  color: #edc200;
+}
+
+.string {
+  color: #fdac9a;
+}
+
+.punctuation {
+  color: white;
+}

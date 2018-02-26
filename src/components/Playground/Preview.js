@@ -4,6 +4,11 @@ import {render} from 'react-dom';
 import ReactDOMServer from 'react-dom/server';
 import {transform} from 'babel-standalone';
 
+function generateContextTypes(contextType) {
+  return `{ ${Object.keys(contextType)
+    .map((val) => `${val}: PropTypes.any.isRequired`)
+    .join(', ')} }`;
+}
 class Preview extends Component {
   static defaultProps = {
     previewComponent: 'div',
@@ -21,15 +26,25 @@ class Preview extends Component {
     error: null,
   };
 
+  componentDidMount = () => {
+    this._executeCode();
+  };
+
+  componentDidUpdate = (prevProps) => {
+    if (this.props.code !== prevProps.code) {
+      this._executeCode();
+    }
+  };
+
   _compileCode = () => {
-    const {code, context, noRender, scope} = this.props;
-    const generateContextTypes = (c) => {
-      return `{ ${Object.keys(c)
-        .map((val) => `${val}: PropTypes.any.isRequired`)
-        .join(', ')} }`;
-    };
+    const {code, context, scope} = this.props;
 
     const scopeWithProps = {...scope, PropTypes};
+
+    const classPattern = /class (\w+) extends React.Component/g;
+    const classMatch = classPattern.exec(code);
+
+    const noRender = !classMatch;
 
     if (noRender) {
       return transform(
@@ -56,14 +71,17 @@ class Preview extends Component {
         {presets: ['es2015', 'react', 'stage-1']},
       ).code;
     } else {
-      return transform(
+      const className = classMatch[1];
+      const transformedCode = transform(
         `
-        ((${Object.keys(scopeWithProps).join(',')}, mountNode) => {
-          ${code}
-        });
-      `,
+          ((${Object.keys(scopeWithProps).join(', ')}, mountNode) => {
+            ${code}
+            return ${className};
+          });
+        `,
         {presets: ['es2015', 'react', 'stage-1']},
       ).code;
+      return transformedCode;
     }
   };
 
@@ -76,8 +94,9 @@ class Preview extends Component {
     const tempScope = [];
 
     try {
-      Object.keys(scopeWithProps).forEach((s) =>
-        tempScope.push(scopeWithProps[s]));
+      Object.keys(scopeWithProps).forEach((scopeProp) => {
+        tempScope.push(scopeWithProps[scopeProp]);
+      });
       tempScope.push(mountNode);
       const compiledCode = this._compileCode();
       if (noRender) {
@@ -88,7 +107,11 @@ class Preview extends Component {
         );
         render(React.createElement(previewComponent, {}, Comp), mountNode);
       } else {
-        eval(compiledCode)(...tempScope);
+        const Comp = React.createElement(eval(compiledCode)(...tempScope));
+        ReactDOMServer.renderToString(
+          React.createElement(previewComponent, {}, Comp),
+        );
+        render(React.createElement(previewComponent, {}, Comp), mountNode);
       }
       /* eslint-enable no-eval, max-len */
       clearTimeout(this.timeoutID);
@@ -102,27 +125,21 @@ class Preview extends Component {
     }
   };
 
-  componentDidMount = () => {
-    this._executeCode();
-  };
-
-  componentDidUpdate = (prevProps) => {
-    if (this.props.code !== prevProps.code) {
-      this._executeCode();
-    }
+  _setMount = (element) => {
+    this.mount = element;
   };
 
   render() {
     const {error} = this.state;
+    const errorMarkup = error
+      ? (
+        <div className="playgroundError">{error}</div>
+      ) : null;
+
     return (
       <div>
-        {error !== null ? <div className="playgroundError">{error}</div> : null}
-        <div
-          ref={(c) => {
-            this.mount = c;
-          }}
-          className="previewArea"
-        />
+        {errorMarkup}
+        <div ref={this._setMount} className="previewArea" />
       </div>
     );
   }

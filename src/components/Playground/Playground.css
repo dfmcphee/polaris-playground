@@ -10,6 +10,7 @@
 
 .playgroundPreview {
   flex: 1 1 80rem;
+  padding: 2rem;
 }
 
 .playgroundStage {

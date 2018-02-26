@@ -3,6 +3,8 @@
     "plugin:shopify/react"
   ],
   "rules": {
-    "react/prop-types": false
+    "react/prop-types": false,
+    "react/jsx-wrap-multilines": false,
+    "react/forbid-prop-types": false
   }
 }

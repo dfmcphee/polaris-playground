@@ -1,6 +1,8 @@
 import 'babel-polyfill';
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import {Button} from '@shopify/polaris';
+
 import Editor from './Editor';
 import Preview from './Preview';
 import EsPreview from './EsPreview';
@@ -56,8 +58,10 @@ class ReactPlayground extends Component {
   };
 
   _toggleCode = () => {
-    this.setState({
-      expandedCode: !this.state.expandedCode,
+    this.setState(({expandedCode}) => {
+      return {
+        expandedCode: !expandedCode,
+      };
     });
   };
 
@@ -76,14 +80,38 @@ class ReactPlayground extends Component {
       theme,
     } = this.props;
 
+    const docMarkup = docClass
+      ? (
+        <Doc
+          componentClass={docClass}
+          propDescriptionMap={propDescriptionMap}
+        />
+      ) : null;
+
+    const expandedCodeText = expandedCode ? 'collapse' : 'expand';
+    const collapsableCodeMarkup = collapsableCode
+      ? (
+        <div className="playgroundToggleCodeBar">
+          <Button onClick={this._toggleCode}>{expandedCodeText}</Button>
+        </div>
+      ) : null;
+
+    const consoleMarkup = es6Console
+      ? (
+        <EsPreview code={code} scope={scope} />
+      ) : (
+        <Preview
+          context={context}
+          code={code}
+          scope={scope}
+          noRender={noRender}
+          previewComponent={previewComponent}
+        />
+      );
+
     return (
       <div className={`playground${collapsableCode ? ' collapsableCode' : ''}`}>
-        {docClass ? (
-          <Doc
-            componentClass={docClass}
-            propDescriptionMap={propDescriptionMap}
-          />
-        ) : null}
+        {docMarkup}
         <div className={`playgroundCode${expandedCode ? ' expandedCode' : ''}`}>
           <Editor
             className="playgroundStage"
@@ -94,28 +122,9 @@ class ReactPlayground extends Component {
             theme={theme}
           />
         </div>
-        {collapsableCode ? (
-          <div className="playgroundToggleCodeBar">
-            <span
-              className="playgroundToggleCodeLink"
-              onClick={this._toggleCode}
-            >
-              {expandedCode ? 'collapse' : 'expand'}
-            </span>
-          </div>
-        ) : null}
+        {collapsableCodeMarkup}
         <div className="playgroundPreview">
-          {es6Console ? (
-            <EsPreview code={code} scope={scope} />
-          ) : (
-            <Preview
-              context={context}
-              code={code}
-              scope={scope}
-              noRender={noRender}
-              previewComponent={previewComponent}
-            />
-          )}
+          {consoleMarkup}
         </div>
       </div>
     );

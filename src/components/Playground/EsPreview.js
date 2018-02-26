@@ -3,17 +3,17 @@ import PropTypes from 'prop-types';
 import {render, unmountComponentAtNode} from 'react-dom';
 import {transform} from 'babel-standalone';
 
-const getType = function(el) {
-  let t = typeof el;
+function getType(element) {
+  let type = typeof element;
 
-  if (Array.isArray(el)) {
-    t = 'array';
-  } else if (el === null) {
-    t = 'null';
+  if (Array.isArray(element)) {
+    type = 'array';
+  } else if (element === null) {
+    type = 'null';
   }
 
-  return t;
-};
+  return type;
+}
 
 const wrapMap = {
   wrapnumber(num) {

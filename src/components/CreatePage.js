@@ -1,61 +1,83 @@
 import React from 'react';
 import {withRouter} from 'react-router-dom';
-import {graphql} from 'react-apollo';
+import {graphql, compose} from 'react-apollo';
 import gql from 'graphql-tag';
-import * as Polaris from '@shopify/polaris';
+import {Button, TextField} from '@shopify/polaris';
 
-import Playground from './Playground';
+import Editor from './Editor';
+import Frame from './Frame';
+import Toolbar from './Toolbar';
 
 class CreatePage extends React.Component {
   state = {
-    description: '',
+    title: '',
     content: '<Button>Add</Button>',
   };
 
-  handlePrototype = async () => {
-    const {createPrototypeMutation, history} = this.props;
-    const {description, content} = this.state;
+  handlePlayground = async () => {
+    const {createPlaygroundMutation, loggedInUserQuery, history} = this.props;
 
-    await createPrototypeMutation({
-      variables: {description, content},
+    const {title, content} = this.state;
+
+    const authorId = loggedInUserQuery.loggedInUser.id;
+
+    await createPlaygroundMutation({
+      variables: {title, content, authorId},
     });
 
     history.replace('/');
   };
 
-  handleDescriptionChange = (value) => {
-    this.setState({description: value});
+  handleTitleChange = (value) => {
+    this.setState({title: value});
   };
 
   render() {
-    const {content} = this.state;
+    const {content, title} = this.state;
+    const {loggedInUserQuery} = this.props;
+
+    const isLoggedIn = (loggedInUserQuery.loggedInUser && (loggedInUserQuery.loggedInUser.id !== null));
 
     return (
-      <div>
-        <Playground codeText={content} scope={{React, ...Polaris}} />
-        <Polaris.TextField
-          value={this.state.description}
-          placeholder="Description"
-          onChange={this.handleDescriptionChange}
-        />
-        <Polaris.Button onClick={this.handlePrototype}>Save</Polaris.Button>
-      </div>
+      <Frame loggedIn={isLoggedIn}>
+        <Toolbar>
+          <TextField label="Title" value={title} onChange={this.handleTitleChange} />
+          <Button primary onClick={this.handlePlayground} disabled={!isLoggedIn}>Save</Button>
+        </Toolbar>
+        <Editor content={content} title={title} onCodeChange={this.handleCodeChange} />
+      </Frame>
     );
   }
 }
 
-const CREATE_PROTOTYPE_MUTATION = gql`
-  mutation CreatePrototypeMutation($description: String, $content: String!) {
-    createPrototype(description: $description, content: $content) {
+const CREATE_PLAYGROUND_MUTATION = gql`
+  mutation CreatePlaygroundMutation(
+    $title: String!
+    $content: String!
+    $authorId: ID!
+  ) {
+    createPlayground(title: $title, content: $content, authorId: $authorId) {
       id
-      description
-      content
     }
   }
 `;
 
-const CreatePageWithMutation = graphql(CREATE_PROTOTYPE_MUTATION, {
-  name: 'createPrototypeMutation',
-})(CreatePage);
+const LOGGED_IN_USER_QUERY = gql`
+  query LoggedInUserQuery {
+    loggedInUser {
+      id
+    }
+  }
+`;
+
+const CreatePageWithMutation = compose(
+  graphql(CREATE_PLAYGROUND_MUTATION, {
+    name: 'createPlaygroundMutation',
+  }),
+  graphql(LOGGED_IN_USER_QUERY, {
+    name: 'loggedInUserQuery',
+    options: {fetchPolicy: 'network-only'},
+  }),
+)(CreatePage);
 
 export default withRouter(CreatePageWithMutation);
