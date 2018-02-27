@@ -34,7 +34,7 @@ class ListPage extends React.Component {
   renderItem = (item) => {
     const {id, title, author} = item;
 
-    const authorMarkup = author ? <TextStyle variation="subdued">by {author.email}</TextStyle> : null;
+    const authorMarkup = author ? <TextStyle variation="subdued">by {author.name}</TextStyle> : null;
 
     return (
       <ResourceList.Item
@@ -43,8 +43,8 @@ class ListPage extends React.Component {
       >
         <h3>
           <TextStyle variation="strong">{title}</TextStyle>
+          {authorMarkup}
         </h3>
-        {authorMarkup}
       </ResourceList.Item>
     );
   };
