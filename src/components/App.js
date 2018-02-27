@@ -4,7 +4,7 @@ import {withRouter} from 'react-router-dom';
 import gql from 'graphql-tag';
 import {GoogleLogin} from 'react-google-login';
 import {createContext} from 'react-broadcast';
-import Notifications from 'react-notify-toast';
+import Notifications, {notify} from 'react-notify-toast';
 
 import {
   Button,
@@ -20,7 +20,6 @@ import Frame from './Frame';
 
 export const AccountContext = createContext();
 
-// eslint-disable-next-line
 const googleClientId = process.env.REACT_APP_GOOGLE_CLIENT_ID;
 
 const notificationOptions = {
@@ -44,6 +43,10 @@ function clearStorage() {
   localStorage.removeItem('graphcoolToken');
 }
 
+function handleGoogleError() {
+  notify.show('Something went wrong. Please try logging in again.', 'error');
+}
+
 class App extends React.Component {
   state = {
     accountId: null,
@@ -58,6 +61,7 @@ class App extends React.Component {
     const googleToken = response.tokenId;
 
     if (!googleToken) {
+      handleGoogleError();
       return;
     }
 
@@ -100,7 +104,7 @@ class App extends React.Component {
         clientId={googleClientId}
         buttonText="Login"
         onSuccess={this.handleGoogleResponse}
-        onFailure={this.handleGoogleResponse}
+        onFailure={handleGoogleError}
         className="Polaris-Button"
         style={{fontSize: '1.4rem'}}
       />

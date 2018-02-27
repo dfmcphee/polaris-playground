@@ -3,8 +3,15 @@
     "plugin:shopify/react"
   ],
   "rules": {
+    "no-alert": 0,
+    "no-process-env": 0,
     "react/prop-types": false,
     "react/jsx-wrap-multilines": false,
-    "react/forbid-prop-types": false
+    "react/forbid-prop-types": false,
+    "react/jsx-no-bind": false
+  },
+  "globals": {
+    "window": true,
+    "process": true
   }
 }

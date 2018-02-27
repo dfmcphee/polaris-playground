@@ -29,6 +29,10 @@ class DetailPage extends React.Component {
   handleDelete = async () => {
     const {history, deletePlaygroundMutation, PlaygroundQuery} = this.props;
 
+    if (!window.confirm('Are you sure you want to delete this playground?')) {
+      return;
+    }
+
     await deletePlaygroundMutation({
       variables: {
         id: PlaygroundQuery.Playground.id,
@@ -151,18 +155,15 @@ class DetailPage extends React.Component {
               ? (
                 <ButtonGroup>
                   <Button onClick={this.handleDelete}>Delete</Button>
-                  {/* eslint-disable-next-line */}
                   <Button onClick={() => this.handleFork(accountId)}>
                     Fork
                   </Button>
-                  {/* eslint-disable-next-line */}
                   <Button primary onClick={() => this.handleUpdate(accountId)}>
                     Save
                   </Button>
                 </ButtonGroup>
               ) : (
                 <ButtonGroup>
-                  {/* eslint-disable-next-line */}
                   <Button onClick={() => this.handleFork(accountId)} disabled={!accountId}>
                     Fork
                   </Button>

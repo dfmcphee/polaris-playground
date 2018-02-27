@@ -23,9 +23,9 @@ class CreatePage extends React.Component {
 
     await createPlaygroundMutation({
       variables: {title, content, authorId},
+    }).then(({data}) => {
+      return history.replace(`/playground/${data.createPlayground.id}`);
     });
-
-    history.replace('/');
   };
 
   handleTitleChange = (value) => {
@@ -42,7 +42,6 @@ class CreatePage extends React.Component {
             <div style={{height: '100%'}}>
               <Toolbar>
                 <TextField label="Playground title" labelHidden value={title} onChange={this.handleTitleChange} />
-                {/* eslint-disable-next-line */}
                 <Button primary onClick={() => this.handlePlayground(context.accountId)} disabled={!context.accountId}>
                   Save
                 </Button>
