@@ -10,15 +10,17 @@ import {InMemoryCache} from 'apollo-cache-inmemory';
 import '@shopify/polaris/styles.css';
 
 import App from './components/App';
+import ListPage from './components/ListPage';
 import CreatePage from './components/CreatePage';
-import CreateUser from './components/CreateUser';
 import DetailPage from './components/DetailPage';
-import LoginUser from './components/LoginUser';
 
 import './index.css';
 
+// eslint-disable-next-line
+const graphCoolAPI = process.env.REACT_APP_GRAPH_COOL_API;
+
 const httpLink = createHttpLink({
-  uri: 'https://api.graph.cool/simple/v1/cje0rcoie0jhm0114uope1nru',
+  uri: graphCoolAPI,
 });
 
 const middlewareLink = new ApolloLink((operation, forward) => {
@@ -42,13 +44,11 @@ const client = new ApolloClient({
 ReactDOM.render(
   <ApolloProvider client={client}>
     <Router>
-      <div>
-        <Route exact path="/" component={App} />
+      <App>
+        <Route exact path="/" component={ListPage} />
         <Route path="/create" component={CreatePage} />
-        <Route path="/login" component={LoginUser} />
-        <Route path="/signup" component={CreateUser} />
         <Route path="/playground/:id" component={DetailPage} />
-      </div>
+      </App>
     </Router>
   </ApolloProvider>,
   document.getElementById('root'),

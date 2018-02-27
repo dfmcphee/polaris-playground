@@ -1,11 +1,11 @@
 import React from 'react';
 import {withRouter} from 'react-router-dom';
-import {graphql, compose} from 'react-apollo';
+import {graphql} from 'react-apollo';
 import gql from 'graphql-tag';
 import {Button, TextField} from '@shopify/polaris';
 
+import {AccountContext} from './App';
 import Editor from './Editor';
-import Frame from './Frame';
 import Toolbar from './Toolbar';
 
 class CreatePage extends React.Component {
@@ -14,12 +14,12 @@ class CreatePage extends React.Component {
     content: '<Button>Add</Button>',
   };
 
-  handlePlayground = async () => {
-    const {createPlaygroundMutation, loggedInUserQuery, history} = this.props;
+  handlePlayground = async (accountId) => {
+    const {createPlaygroundMutation, history} = this.props;
 
     const {title, content} = this.state;
 
-    const authorId = loggedInUserQuery.loggedInUser.id;
+    const authorId = accountId;
 
     await createPlaygroundMutation({
       variables: {title, content, authorId},
@@ -34,18 +34,24 @@ class CreatePage extends React.Component {
 
   render() {
     const {content, title} = this.state;
-    const {loggedInUserQuery} = this.props;
-
-    const isLoggedIn = (loggedInUserQuery.loggedInUser && (loggedInUserQuery.loggedInUser.id !== null));
 
     return (
-      <Frame loggedIn={isLoggedIn}>
-        <Toolbar>
-          <TextField label="Title" value={title} onChange={this.handleTitleChange} />
-          <Button primary onClick={this.handlePlayground} disabled={!isLoggedIn}>Save</Button>
-        </Toolbar>
-        <Editor content={content} title={title} onCodeChange={this.handleCodeChange} />
-      </Frame>
+      <AccountContext.Consumer>
+        {(context) => {
+          return (
+            <div style={{height: '100%'}}>
+              <Toolbar>
+                <TextField label="Playground title" labelHidden value={title} onChange={this.handleTitleChange} />
+                {/* eslint-disable-next-line */}
+                <Button primary onClick={() => this.handlePlayground(context.accountId)} disabled={!context.accountId}>
+                  Save
+                </Button>
+              </Toolbar>
+              <Editor content={content} title={title} onCodeChange={this.handleCodeChange} />
+            </div>
+          );
+        }}
+      </AccountContext.Consumer>
     );
   }
 }
@@ -62,22 +68,8 @@ const CREATE_PLAYGROUND_MUTATION = gql`
   }
 `;
 
-const LOGGED_IN_USER_QUERY = gql`
-  query LoggedInUserQuery {
-    loggedInUser {
-      id
-    }
-  }
-`;
-
-const CreatePageWithMutation = compose(
-  graphql(CREATE_PLAYGROUND_MUTATION, {
-    name: 'createPlaygroundMutation',
-  }),
-  graphql(LOGGED_IN_USER_QUERY, {
-    name: 'loggedInUserQuery',
-    options: {fetchPolicy: 'network-only'},
-  }),
-)(CreatePage);
+const CreatePageWithMutation = graphql(CREATE_PLAYGROUND_MUTATION, {
+  name: 'createPlaygroundMutation',
+})(CreatePage);
 
 export default withRouter(CreatePageWithMutation);

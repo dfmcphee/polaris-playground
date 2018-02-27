@@ -20,7 +20,7 @@ class ListPage extends React.Component {
   };
 
   handleDelete = async (id) => {
-    const {history, deletePlaygroundMutation} = this.props;
+    const {deletePlaygroundMutation} = this.props;
 
     await deletePlaygroundMutation({
       variables: {
@@ -28,21 +28,18 @@ class ListPage extends React.Component {
       },
     });
 
-    history.replace('/');
+    this.handleRefresh();
   };
 
   renderItem = (item) => {
     const {id, title, author} = item;
-    const authorMarkup = author ? <div>by {author}</div> : null;
-    const shortcutActions = [
-      {content: 'Delete', onClick: () => this.handleDelete(id)},
-    ];
+
+    const authorMarkup = author ? <TextStyle variation="subdued">by {author.email}</TextStyle> : null;
 
     return (
       <ResourceList.Item
         id={id}
         url={`/playground/${item.id}`}
-        shortcutActions={shortcutActions}
       >
         <h3>
           <TextStyle variation="strong">{title}</TextStyle>
@@ -52,12 +49,12 @@ class ListPage extends React.Component {
     );
   };
 
-  // componentWillReceiveProps(nextProps) {
-  //   const {location, allPlaygroundsQuery} = this.props;
-  //   if (location.key !== nextProps.location.key) {
-  //     allPlaygroundsQuery.refetch();
-  //   }
-  // }
+  componentWillReceiveProps(nextProps) {
+    const {location, allPlaygroundsQuery} = this.props;
+    if (location.key !== nextProps.location.key) {
+      allPlaygroundsQuery.refetch();
+    }
+  }
 
   render() {
     const {allPlaygroundsQuery} = this.props;
@@ -99,6 +96,11 @@ const ALL_PLAYGROUNDS_QUERY = gql`
       id
       content
       title
+      author {
+        id,
+        name,
+        email
+      }
     }
   }
 `;

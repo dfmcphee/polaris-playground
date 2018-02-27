@@ -11,10 +11,12 @@ import {
   SkeletonDisplayText,
   TextField,
 } from '@shopify/polaris';
+
 import {withRouter} from 'react-router-dom';
 import gql from 'graphql-tag';
+import {notify} from 'react-notify-toast';
 
-import Frame from './Frame';
+import {AccountContext} from './App';
 import Editor from './Editor';
 import Toolbar from './Toolbar';
 
@@ -36,10 +38,10 @@ class DetailPage extends React.Component {
     history.replace('/');
   };
 
-  handleUpdate = async () => {
-    const {updatePlaygroundMutation, PlaygroundQuery, loggedInUserQuery} = this.props;
+  handleUpdate = async (accountId) => {
+    const {updatePlaygroundMutation, PlaygroundQuery} = this.props;
 
-    const authorId = loggedInUserQuery.loggedInUser.id;
+    const authorId = accountId;
 
     await updatePlaygroundMutation({
       variables: {
@@ -49,13 +51,15 @@ class DetailPage extends React.Component {
         authorId,
       },
     });
+
+    notify.show('Playground saved', 'info');
   };
 
-  handleFork = async () => {
-    const {createPlaygroundMutation, loggedInUserQuery, history} = this.props;
+  handleFork = async (accountId) => {
+    const {createPlaygroundMutation, history} = this.props;
     const {title, content} = this.state;
 
-    const authorId = loggedInUserQuery.loggedInUser.id;
+    const authorId = accountId;
 
     await createPlaygroundMutation({
       variables: {title, content, authorId},
@@ -90,12 +94,12 @@ class DetailPage extends React.Component {
   }
 
   render() {
-    const {PlaygroundQuery, loggedInUserQuery} = this.props;
+    const {PlaygroundQuery} = this.props;
     const {content, title} = this.state;
 
     if (PlaygroundQuery.loading) {
       return (
-        <Frame loggedIn={false}>
+        <div>
           <Toolbar>
             <SkeletonDisplayText size="small" />
             <SkeletonDisplayText size="small" />
@@ -116,12 +120,9 @@ class DetailPage extends React.Component {
               </Card>
             </Layout.Section>
           </Layout>
-        </Frame>
+        </div>
       );
     }
-
-    const isLoggedIn = (loggedInUserQuery.loggedInUser && loggedInUserQuery.loggedInUser.id);
-    const isAuthor = (isLoggedIn && (loggedInUserQuery.loggedInUser.id === PlaygroundQuery.Playground.author.id));
 
     const editor =
       content && content !== '' ? (
@@ -132,36 +133,54 @@ class DetailPage extends React.Component {
         />
       ) : null;
 
-    const titleMarkup = isAuthor
-      ? (
-        <TextField label="Title" value={title} onChange={this.handleTitleChange} />
-      ) : (
-        <Heading>{title}</Heading>
-      );
-
-    const actionsMarkup = isAuthor
-      ? (
-        <ButtonGroup>
-          <Button onClick={this.handleDelete}>Delete</Button>
-          <Button onClick={this.handleFork}>Fork</Button>
-          <Button primary onClick={this.handleUpdate}>Save</Button>
-        </ButtonGroup>
-      ) : (
-        <ButtonGroup>
-          <Button onClick={this.handleFork} disabled={!isLoggedIn}>
-            Fork
-          </Button>
-        </ButtonGroup>
-      );
 
     return (
-      <Frame loggedIn={isLoggedIn}>
-        <Toolbar>
-          {titleMarkup}
-          {actionsMarkup}
-        </Toolbar>
-        {editor}
-      </Frame>
+      <div style={{height: '100%'}}>
+        <AccountContext.Consumer>
+          {(context) => {
+            const accountId = context.accountId;
+            const isAuthor = accountId && (accountId === PlaygroundQuery.Playground.author.id);
+
+            const titleMarkup = isAuthor ? (
+              <TextField label="Playground title" labelHidden value={title} onChange={this.handleTitleChange} />
+            ) : (
+              <Heading>{title}</Heading>
+            );
+
+            const actionsMarkup = isAuthor
+              ? (
+                <ButtonGroup>
+                  <Button onClick={this.handleDelete}>Delete</Button>
+                  {/* eslint-disable-next-line */}
+                  <Button onClick={() => this.handleFork(accountId)}>
+                    Fork
+                  </Button>
+                  {/* eslint-disable-next-line */}
+                  <Button primary onClick={() => this.handleUpdate(accountId)}>
+                    Save
+                  </Button>
+                </ButtonGroup>
+              ) : (
+                <ButtonGroup>
+                  {/* eslint-disable-next-line */}
+                  <Button onClick={() => this.handleFork(accountId)} disabled={!accountId}>
+                    Fork
+                  </Button>
+                </ButtonGroup>
+              );
+
+            return (
+              <div style={{height: '100%'}}>
+                <Toolbar>
+                  {titleMarkup}
+                  {actionsMarkup}
+                </Toolbar>
+                {editor}
+              </div>
+            );
+          }}
+        </AccountContext.Consumer>
+      </div>
     );
   }
 }
@@ -210,14 +229,6 @@ const CREATE_PLAYGROUND_MUTATION = gql`
   }
 `;
 
-const LOGGED_IN_USER_QUERY = gql`
-  query LoggedInUserQuery {
-    loggedInUser {
-      id
-    }
-  }
-`;
-
 const DetailPageWithGraphQL = compose(
   graphql(PLAYGROUND_QUERY, {
     name: 'PlaygroundQuery',
@@ -235,10 +246,6 @@ const DetailPageWithGraphQL = compose(
   }),
   graphql(CREATE_PLAYGROUND_MUTATION, {
     name: 'createPlaygroundMutation',
-  }),
-  graphql(LOGGED_IN_USER_QUERY, {
-    name: 'loggedInUserQuery',
-    options: {fetchPolicy: 'network-only'},
   }),
 )(DetailPage);
 
