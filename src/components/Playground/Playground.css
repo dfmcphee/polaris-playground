@@ -6,6 +6,7 @@
 .playgroundCode {
   flex: 1 1 60rem;
   height: 100%;
+  min-width: 0;
 }
 
 .playgroundPreview {
