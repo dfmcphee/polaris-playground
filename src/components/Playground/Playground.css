@@ -11,6 +11,7 @@
 .playgroundPreview {
   flex: 1 1 80rem;
   padding: 2rem;
+  overflow: auto;
 }
 
 .playgroundStage {
@@ -263,6 +264,8 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 .CodeMirror-scroll {
   position: relative;
   overflow: -moz-scrollbars-none;
+  overflow-y: auto;
+  overflow-x: hidden;
   height: 100%;
   margin-right: -30px;
   margin-bottom: -30px;
@@ -270,6 +273,7 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
   /* Prevent dragging from highlighting the element */
   -ms-overflow-style: none;
 }
+
 .CodeMirror-scroll::-webkit-scrollbar {
   display: none;
 }
