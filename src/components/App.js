@@ -147,8 +147,8 @@ const LOGGED_IN_USER_QUERY = gql`
 `;
 
 const AUTHENTICATE_GOOGLE_USER = gql`
-  mutation AuthenticateUserMutation($googleToken: String!) {
-    authenticateGoogleUser(googleToken: $googleToken) {
+  mutation AuthenticateUserMutation($googleToken: String!, $email: String, $name: String) {
+    authenticateGoogleUser(googleToken: $googleToken, email: $email, name: $name) {
       id
       token
     }

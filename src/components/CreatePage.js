@@ -32,6 +32,10 @@ class CreatePage extends React.Component {
     this.setState({title: value});
   };
 
+  handleCodeChange = (content) => {
+    this.setState({content});
+  };
+
   render() {
     const {content, title} = this.state;
 
@@ -41,12 +45,25 @@ class CreatePage extends React.Component {
           return (
             <div style={{height: '100%'}}>
               <Toolbar>
-                <TextField label="Playground title" labelHidden value={title} onChange={this.handleTitleChange} />
-                <Button primary onClick={() => this.handlePlayground(context.accountId)} disabled={!context.accountId}>
+                <TextField
+                  label="Playground title"
+                  labelHidden
+                  value={title}
+                  onChange={this.handleTitleChange}
+                />
+                <Button
+                  primary
+                  onClick={() => this.handlePlayground(context.accountId)}
+                  disabled={!context.accountId}
+                >
                   Save
                 </Button>
               </Toolbar>
-              <Editor content={content} title={title} onCodeChange={this.handleCodeChange} />
+              <Editor
+                content={content}
+                title={title}
+                onCodeChange={this.handleCodeChange}
+              />
             </div>
           );
         }}
