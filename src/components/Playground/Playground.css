@@ -9,6 +9,10 @@
   min-width: 0;
 }
 
+.CodeMirror {
+  padding: 2rem;
+}
+
 .playgroundPreview {
   flex: 1 1 80rem;
   padding: 2rem;
@@ -259,7 +263,6 @@ div.CodeMirror span.CodeMirror-nonmatchingbracket {
 .CodeMirror {
   position: relative;
   overflow: hidden;
-  padding: 2rem;
 }
 
 .CodeMirror-scroll {

@@ -9,6 +9,7 @@ import {
   Card,
   SkeletonBodyText,
   SkeletonDisplayText,
+  SkeletonPage,
   TextField,
 } from '@shopify/polaris';
 
@@ -81,7 +82,10 @@ class DetailPage extends React.Component {
   };
 
   componentWillReceiveProps(nextProps) {
-    if (nextProps.PlaygroundQuery.loading && !this.props.PlaygroundQuery.loading) {
+    if (
+      nextProps.PlaygroundQuery.loading &&
+      !this.props.PlaygroundQuery.loading
+    ) {
       return;
     }
 
@@ -108,22 +112,18 @@ class DetailPage extends React.Component {
             <SkeletonDisplayText size="small" />
             <SkeletonDisplayText size="small" />
           </Toolbar>
-          <Layout>
-            <Layout.Section secondary>
-              <Card sectioned>
-                <TextContainer>
-                  <SkeletonBodyText lines={6} />
-                </TextContainer>
-              </Card>
-            </Layout.Section>
-            <Layout.Section>
-              <Card sectioned>
-                <TextContainer>
-                  <SkeletonBodyText lines={8} />
-                </TextContainer>
-              </Card>
-            </Layout.Section>
-          </Layout>
+          <SkeletonPage>
+            <Layout>
+              <Layout.Section>
+                <Card sectioned>
+                  <TextContainer>
+                    <SkeletonDisplayText size="small" />
+                    <SkeletonBodyText />
+                  </TextContainer>
+                </Card>
+              </Layout.Section>
+            </Layout>
+          </SkeletonPage>
         </div>
       );
     }
@@ -137,38 +137,59 @@ class DetailPage extends React.Component {
         />
       ) : null;
 
-
     return (
       <div style={{height: '100%'}}>
         <AccountContext.Consumer>
           {(context) => {
             const accountId = context.accountId;
-            const isAuthor = accountId && (accountId === PlaygroundQuery.Playground.author.id);
+            const isAuthor =
+              accountId &&
+              PlaygroundQuery.Playground &&
+              (accountId === PlaygroundQuery.Playground.author.id);
 
             const titleMarkup = isAuthor ? (
-              <TextField label="Playground title" labelHidden value={title} onChange={this.handleTitleChange} />
+              <div className="toolbar-field">
+                <TextField
+                  label="Playground title"
+                  labelHidden
+                  value={title}
+                  onChange={this.handleTitleChange}
+                />
+              </div>
             ) : (
               <Heading>{title}</Heading>
             );
 
-            const actionsMarkup = isAuthor
-              ? (
-                <ButtonGroup>
-                  <Button onClick={this.handleDelete}>Delete</Button>
-                  <Button onClick={() => this.handleFork(accountId)}>
-                    Fork
-                  </Button>
-                  <Button primary onClick={() => this.handleUpdate(accountId)}>
-                    Save
-                  </Button>
-                </ButtonGroup>
-              ) : (
-                <ButtonGroup>
-                  <Button onClick={() => this.handleFork(accountId)} disabled={!accountId}>
-                    Fork
-                  </Button>
-                </ButtonGroup>
-              );
+            const actionsMarkup = isAuthor ? (
+              <ButtonGroup>
+                <Button onClick={this.handleDelete}>Delete</Button>
+                <Button onClick={() => this.handleFork(accountId)}>Fork</Button>
+                <Button
+                  url={`/preview/${PlaygroundQuery.Playground.id}`}
+                  target="playground"
+                >
+                  Preview
+                </Button>
+                <Button primary onClick={() => this.handleUpdate(accountId)}>
+                  Save
+                </Button>
+              </ButtonGroup>
+            ) : (
+              <ButtonGroup>
+                <Button
+                  onClick={() => this.handleFork(accountId)}
+                  disabled={!accountId}
+                >
+                  Fork
+                </Button>
+                <Button
+                  url={`/preview/${PlaygroundQuery.Playground.id}`}
+                  target="playground"
+                >
+                  Preview
+                </Button>
+              </ButtonGroup>
+            );
 
             return (
               <div style={{height: '100%'}}>
@@ -201,7 +222,12 @@ const UPDATE_PLAYGROUND_MUTATION = gql`
     $content: String!
     $authorId: ID!
   ) {
-    updatePlayground(id: $id, title: $title, content: $content, authorId: $authorId) {
+    updatePlayground(
+      id: $id
+      title: $title
+      content: $content
+      authorId: $authorId
+    ) {
       id
       title
       content
@@ -223,7 +249,11 @@ const PLAYGROUND_QUERY = gql`
 `;
 
 const CREATE_PLAYGROUND_MUTATION = gql`
-  mutation CreatePlaygroundMutation($title: String!, $content: String!, $authorId: ID!) {
+  mutation CreatePlaygroundMutation(
+    $title: String!
+    $content: String!
+    $authorId: ID!
+  ) {
     createPlayground(title: $title, content: $content, authorId: $authorId) {
       id
     }

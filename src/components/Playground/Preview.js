@@ -37,7 +37,7 @@ class Preview extends Component {
   };
 
   _compileCode = () => {
-    const {code, context, scope} = this.props;
+    const {code, context = {}, scope} = this.props;
 
     const scopeWithProps = {...scope, PropTypes};
 
@@ -90,7 +90,6 @@ class Preview extends Component {
     const {scope, noRender, previewComponent} = this.props;
 
     const scopeWithProps = {...scope, PropTypes};
-
     const tempScope = [];
 
     try {
@@ -99,6 +98,7 @@ class Preview extends Component {
       });
       tempScope.push(mountNode);
       const compiledCode = this._compileCode();
+
       if (noRender) {
         /* eslint-disable no-eval, max-len */
         const Comp = React.createElement(eval(compiledCode)(...tempScope));
@@ -131,10 +131,9 @@ class Preview extends Component {
 
   render() {
     const {error} = this.state;
-    const errorMarkup = error
-      ? (
-        <div className="playgroundError">{error}</div>
-      ) : null;
+    const errorMarkup = error ? (
+      <div className="playgroundError">{error}</div>
+    ) : null;
 
     return (
       <div>

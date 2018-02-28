@@ -45,12 +45,14 @@ class CreatePage extends React.Component {
           return (
             <div style={{height: '100%'}}>
               <Toolbar>
-                <TextField
-                  label="Playground title"
-                  labelHidden
-                  value={title}
-                  onChange={this.handleTitleChange}
-                />
+                <div className="toolbar-field">
+                  <TextField
+                    label="Playground title"
+                    labelHidden
+                    value={title}
+                    onChange={this.handleTitleChange}
+                  />
+                </div>
                 <Button
                   primary
                   onClick={() => this.handlePlayground(context.accountId)}

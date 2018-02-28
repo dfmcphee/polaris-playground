@@ -13,6 +13,7 @@ import App from './components/App';
 import ListPage from './components/ListPage';
 import CreatePage from './components/CreatePage';
 import DetailPage from './components/DetailPage';
+import PreviewPage from './components/PreviewPage';
 
 import './index.css';
 
@@ -48,6 +49,7 @@ ReactDOM.render(
         <Route exact path="/" component={ListPage} />
         <Route path="/create" component={CreatePage} />
         <Route path="/playground/:id" component={DetailPage} />
+        <Route path="/preview/:id" component={PreviewPage} />
       </App>
     </Router>
   </ApolloProvider>,
