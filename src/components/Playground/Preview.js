@@ -58,7 +58,9 @@ class Preview extends Component {
 
             render() {
               return (
-                ${code}
+                <AppProvider>
+                  ${code}
+                </AppProvider>
               );
             }
           }

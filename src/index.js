@@ -6,6 +6,7 @@ import {ApolloProvider} from 'react-apollo';
 import {createHttpLink} from 'apollo-link-http';
 import {ApolloLink} from 'apollo-link';
 import {InMemoryCache} from 'apollo-cache-inmemory';
+import {AppProvider} from '@shopify/polaris';
 
 import '@shopify/polaris/styles.css';
 
@@ -43,15 +44,17 @@ const client = new ApolloClient({
 });
 
 ReactDOM.render(
-  <ApolloProvider client={client}>
-    <Router>
-      <App>
-        <Route exact path="/" component={ListPage} />
-        <Route path="/create" component={CreatePage} />
-        <Route path="/playground/:id" component={DetailPage} />
-        <Route path="/preview/:id" component={PreviewPage} />
-      </App>
-    </Router>
-  </ApolloProvider>,
+  <AppProvider>
+    <ApolloProvider client={client}>
+      <Router>
+        <App>
+          <Route exact path="/" component={ListPage} />
+          <Route path="/create" component={CreatePage} />
+          <Route path="/playground/:id" component={DetailPage} />
+          <Route path="/preview/:id" component={PreviewPage} />
+        </App>
+      </Router>
+    </ApolloProvider>
+  </AppProvider>,
   document.getElementById('root'),
 );
