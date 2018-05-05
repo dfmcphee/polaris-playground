@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {render} from 'react-dom';
 import ReactDOMServer from 'react-dom/server';
 import {transform} from 'babel-standalone';
+import {AppProvider} from '@shopify/polaris';
 
 function generateContextTypes(contextType) {
   return `{ ${Object.keys(contextType)
@@ -18,7 +19,6 @@ class Preview extends Component {
     code: PropTypes.string.isRequired,
     scope: PropTypes.object.isRequired,
     previewComponent: PropTypes.node,
-    noRender: PropTypes.bool,
     context: PropTypes.object,
   };
 
@@ -58,9 +58,7 @@ class Preview extends Component {
 
             render() {
               return (
-                <AppProvider>
-                  ${code}
-                </AppProvider>
+                ${code}
               );
             }
           }
@@ -89,7 +87,7 @@ class Preview extends Component {
 
   _executeCode = () => {
     const mountNode = this.mount;
-    const {scope, noRender, previewComponent} = this.props;
+    const {scope, previewComponent} = this.props;
 
     const scopeWithProps = {...scope, PropTypes};
     const tempScope = [];
@@ -101,20 +99,18 @@ class Preview extends Component {
       tempScope.push(mountNode);
       const compiledCode = this._compileCode();
 
-      if (noRender) {
-        /* eslint-disable no-eval, max-len */
-        const Comp = React.createElement(eval(compiledCode)(...tempScope));
-        ReactDOMServer.renderToString(
-          React.createElement(previewComponent, {}, Comp),
-        );
-        render(React.createElement(previewComponent, {}, Comp), mountNode);
-      } else {
-        const Comp = React.createElement(eval(compiledCode)(...tempScope));
-        ReactDOMServer.renderToString(
-          React.createElement(previewComponent, {}, Comp),
-        );
-        render(React.createElement(previewComponent, {}, Comp), mountNode);
-      }
+      /* eslint-disable no-eval, max-len */
+      const Comp = React.createElement(eval(compiledCode)(...tempScope));
+
+      const Demo = (
+        <AppProvider>
+          {React.createElement(previewComponent, {}, Comp)}
+        </AppProvider >
+      );
+
+      ReactDOMServer.renderToString(Demo);
+      render(Demo, mountNode);
+
       /* eslint-enable no-eval, max-len */
       clearTimeout(this.timeoutID);
       this.setState({error: null});
