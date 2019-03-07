@@ -105,7 +105,7 @@ class Preview extends Component {
       const Demo = (
         <AppProvider>
           {React.createElement(previewComponent, {}, Comp)}
-        </AppProvider >
+        </AppProvider>
       );
 
       ReactDOMServer.renderToString(Demo);

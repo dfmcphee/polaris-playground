@@ -43,8 +43,8 @@ function clearStorage() {
   localStorage.removeItem('graphcoolToken');
 }
 
-function handleGoogleError({ error, details }) {
-  console.error(`${ error }\n${ details }`);
+function handleGoogleError({error, details}) {
+  console.error(`${error}\n${details}`);
   notify.show('Something went wrong. Please try logging in again.', 'error');
 }
 
@@ -59,7 +59,7 @@ class App extends React.Component {
   };
 
   handleGoogleResponse = async (response) => {
-		console.log( response );
+    console.log(response);
     const googleToken = response.tokenId;
 
     if (!googleToken) {
@@ -149,8 +149,16 @@ const LOGGED_IN_USER_QUERY = gql`
 `;
 
 const AUTHENTICATE_GOOGLE_USER = gql`
-  mutation AuthenticateUserMutation($googleToken: String!, $email: String, $name: String) {
-    authenticateGoogleUser(googleToken: $googleToken, email: $email, name: $name) {
+  mutation AuthenticateUserMutation(
+    $googleToken: String!
+    $email: String
+    $name: String
+  ) {
+    authenticateGoogleUser(
+      googleToken: $googleToken
+      email: $email
+      name: $name
+    ) {
       id
       token
     }

@@ -127,34 +127,35 @@ class EsPreview extends Component {
       tempScope.push(mountNode);
       const compiledCode = this._compileCode();
       class Comp extends Component {
-        _createConsoleLine = ({val, multipleArgs}) => <span
-            style={{marginRight: '20px'}}
-          >
+        _createConsoleLine = ({val, multipleArgs}) => (
+          <span style={{marginRight: '20px'}}>
             {multipleArgs
               ? val.map((y) => this._createConsoleLine([y], false))
               : wrapMap[`wrap${getType(val[0])}`](val[0])}
-          </span>;
-        
+          </span>
+        );
+
         render() {
           /* eslint-disable no-eval */
-          return <div style={{padding: 15, fontFamily: 'Consolas, Courier, monospace'}}>
-              {eval(compiledCode)(...tempScope).map(
-                (x, i) => (
-                  <div
-                    key={i}
-                    style={{
-                      borderBottom: '1px solid #ccc',
-                      padding: '4px 0',
-                    }}
-                  >
-                    {this._createConsoleLine(x)}
-                  </div>
-                ),
-              )}
-            </div>;
+          return (
+            <div
+              style={{padding: 15, fontFamily: 'Consolas, Courier, monospace'}}
+            >
+              {eval(compiledCode)(...tempScope).map((x, i) => (
+                <div
+                  key={i}
+                  style={{
+                    borderBottom: '1px solid #ccc',
+                    padding: '4px 0',
+                  }}
+                >
+                  {this._createConsoleLine(x)}
+                </div>
+              ))}
+            </div>
+          );
           /* eslint-enable no-eval */
         }
-
       }
       render(<Comp />, mountNode);
     } catch (err) {

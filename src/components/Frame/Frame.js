@@ -5,7 +5,6 @@ import {Stack} from '@shopify/polaris';
 
 import './Frame.css';
 
-
 export default function Frame({children, topBarActions}) {
   const topBar = (
     <Stack distribution="equalSpacing" alignment="center">

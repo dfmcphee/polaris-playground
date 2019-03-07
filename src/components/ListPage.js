@@ -34,7 +34,9 @@ class ListPage extends React.Component {
   renderItem = (item) => {
     const {id, title, author} = item;
 
-    const authorMarkup = author ? <TextStyle variation="subdued">by {author.name}</TextStyle> : null;
+    const authorMarkup = author ? (
+      <TextStyle variation="subdued">by {author.name}</TextStyle>
+    ) : null;
 
     return (
       <ResourceList.Item id={id} url={`/playground/${item.id}`}>
@@ -74,7 +76,10 @@ class ListPage extends React.Component {
     }
 
     return (
-      <Page title="Playgrounds" primaryAction={{content: 'New playground', url: '/create'}}>
+      <Page
+        title="Playgrounds"
+        primaryAction={{content: 'New playground', url: '/create'}}
+      >
         <Card>
           <ResourceList
             resourceName={{singular: 'playground', plural: 'playgrounds'}}
@@ -94,8 +99,8 @@ const ALL_PLAYGROUNDS_QUERY = gql`
       content
       title
       author {
-        id,
-        name,
+        id
+        name
         email
       }
     }

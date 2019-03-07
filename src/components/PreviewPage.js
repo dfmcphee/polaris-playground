@@ -37,10 +37,7 @@ function PreviewPage({PlaygroundQuery}) {
 
   return (
     <div style={{height: '100%'}}>
-      <Preview
-        code={Playground.content}
-        scope={{React, ...Polaris}}
-      />
+      <Preview code={Playground.content} scope={{React, ...Polaris}} />
     </div>
   );
 }
