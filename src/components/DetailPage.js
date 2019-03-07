@@ -59,6 +59,11 @@ class DetailPage extends React.Component {
 
     notify.show('Playground saved', 'info');
   };
+  
+  handlePreview = async (accountID, previewPath ) => {
+    await this.handleUpdate(accountID);
+    this.props.history.push(previewPath);
+  };
 
   handleFork = async (accountId) => {
     const {createPlaygroundMutation, history} = this.props;
@@ -164,11 +169,11 @@ class DetailPage extends React.Component {
               <ButtonGroup>
                 <Button onClick={this.handleDelete}>Delete</Button>
                 <Button onClick={() => this.handleFork(accountId)}>Fork</Button>
-                <Button
-                  url={`/preview/${PlaygroundQuery.Playground.id}`}
-                  target="playground"
-                >
-                  Preview
+                <Button onClick={() => this.handlePreview(
+                  accountId,
+                  `/preview/${PlaygroundQuery.Playground.id}`,
+                )}>
+                Preview
                 </Button>
                 <Button primary onClick={() => this.handleUpdate(accountId)}>
                   Save
