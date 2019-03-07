@@ -43,7 +43,8 @@ function clearStorage() {
   localStorage.removeItem('graphcoolToken');
 }
 
-function handleGoogleError() {
+function handleGoogleError({ error, details }) {
+  console.error(`${ error }\n${ details }`);
   notify.show('Something went wrong. Please try logging in again.', 'error');
 }
 
@@ -58,6 +59,7 @@ class App extends React.Component {
   };
 
   handleGoogleResponse = async (response) => {
+		console.log( response );
     const googleToken = response.tokenId;
 
     if (!googleToken) {
