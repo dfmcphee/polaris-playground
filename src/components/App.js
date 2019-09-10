@@ -59,7 +59,6 @@ class App extends React.Component {
   };
 
   handleGoogleResponse = async (response) => {
-    console.log(response);
     const googleToken = response.tokenId;
 
     if (!googleToken) {
