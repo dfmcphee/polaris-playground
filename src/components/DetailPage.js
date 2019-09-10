@@ -60,6 +60,11 @@ class DetailPage extends React.Component {
     notify.show('Playground saved', 'info');
   };
 
+  handlePreview = async (accountID, previewPath) => {
+    await this.handleUpdate(accountID);
+    this.props.history.push(previewPath);
+  };
+
   handleFork = async (accountId) => {
     const {createPlaygroundMutation, history} = this.props;
     const {title, content} = this.state;
@@ -145,7 +150,7 @@ class DetailPage extends React.Component {
             const isAuthor =
               accountId &&
               PlaygroundQuery.Playground &&
-              (accountId === PlaygroundQuery.Playground.author.id);
+              accountId === PlaygroundQuery.Playground.author.id;
 
             const titleMarkup = isAuthor ? (
               <div className="toolbar-field">
@@ -165,8 +170,12 @@ class DetailPage extends React.Component {
                 <Button onClick={this.handleDelete}>Delete</Button>
                 <Button onClick={() => this.handleFork(accountId)}>Fork</Button>
                 <Button
-                  url={`/preview/${PlaygroundQuery.Playground.id}`}
-                  target="playground"
+                  onClick={() =>
+                    this.handlePreview(
+                      accountId,
+                      `/preview/${PlaygroundQuery.Playground.id}`,
+                    )
+                  }
                 >
                   Preview
                 </Button>

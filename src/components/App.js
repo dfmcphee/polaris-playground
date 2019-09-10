@@ -43,7 +43,8 @@ function clearStorage() {
   localStorage.removeItem('graphcoolToken');
 }
 
-function handleGoogleError() {
+function handleGoogleError({error, details}) {
+  console.error(`${error}\n${details}`);
   notify.show('Something went wrong. Please try logging in again.', 'error');
 }
 
@@ -147,8 +148,16 @@ const LOGGED_IN_USER_QUERY = gql`
 `;
 
 const AUTHENTICATE_GOOGLE_USER = gql`
-  mutation AuthenticateUserMutation($googleToken: String!, $email: String, $name: String) {
-    authenticateGoogleUser(googleToken: $googleToken, email: $email, name: $name) {
+  mutation AuthenticateUserMutation(
+    $googleToken: String!
+    $email: String
+    $name: String
+  ) {
+    authenticateGoogleUser(
+      googleToken: $googleToken
+      email: $email
+      name: $name
+    ) {
       id
       token
     }

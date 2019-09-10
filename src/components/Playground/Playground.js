@@ -80,34 +80,28 @@ class ReactPlayground extends Component {
       theme,
     } = this.props;
 
-    const docMarkup = docClass
-      ? (
-        <Doc
-          componentClass={docClass}
-          propDescriptionMap={propDescriptionMap}
-        />
-      ) : null;
+    const docMarkup = docClass ? (
+      <Doc componentClass={docClass} propDescriptionMap={propDescriptionMap} />
+    ) : null;
 
     const expandedCodeText = expandedCode ? 'collapse' : 'expand';
-    const collapsableCodeMarkup = collapsableCode
-      ? (
-        <div className="playgroundToggleCodeBar">
-          <Button onClick={this._toggleCode}>{expandedCodeText}</Button>
-        </div>
-      ) : null;
+    const collapsableCodeMarkup = collapsableCode ? (
+      <div className="playgroundToggleCodeBar">
+        <Button onClick={this._toggleCode}>{expandedCodeText}</Button>
+      </div>
+    ) : null;
 
-    const consoleMarkup = es6Console
-      ? (
-        <EsPreview code={code} scope={scope} />
-      ) : (
-        <Preview
-          context={context}
-          code={code}
-          scope={scope}
-          noRender={noRender}
-          previewComponent={previewComponent}
-        />
-      );
+    const consoleMarkup = es6Console ? (
+      <EsPreview code={code} scope={scope} />
+    ) : (
+      <Preview
+        context={context}
+        code={code}
+        scope={scope}
+        noRender={noRender}
+        previewComponent={previewComponent}
+      />
+    );
 
     return (
       <div className={`playground${collapsableCode ? ' collapsableCode' : ''}`}>
@@ -123,9 +117,7 @@ class ReactPlayground extends Component {
           />
         </div>
         {collapsableCodeMarkup}
-        <div className="playgroundPreview">
-          {consoleMarkup}
-        </div>
+        <div className="playgroundPreview">{consoleMarkup}</div>
       </div>
     );
   }
