@@ -16,7 +16,7 @@
     "apollo-link-http": "^1.1.0",
     "babel-polyfill": "^6.26.0",
     "babel-standalone": "^6.26.0",
-    "codemirror": "^5.35.0",
+    "codemirror": "^5.58.2",
     "graphql": "^0.11.7",
     "graphql-tag": "^2.5.0",
     "prop-types": "^15.6.0",
